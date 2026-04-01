@@ -33,6 +33,7 @@ import { Button } from "@chatkit/ui";
 import { cn } from "@chatkit/shared";
 
 import { PreviewAttachment } from "../messages/preview-attachment";
+import { SuggestedActions } from "./suggested-actions";
 import { ToolSelector } from "./tool-selector";
 import type {
   ChatStatus,
@@ -65,6 +66,9 @@ type MultimodalInputProps = {
   canSearch?: boolean;
   onSearchClick?: () => void;
   placeholder?: string;
+  showSuggestedActions?: boolean;
+  suggestedActions?: string[];
+  onSelectSuggestedAction?: (suggestion: string) => void;
 };
 
 function PureMultimodalInput({
@@ -91,6 +95,9 @@ function PureMultimodalInput({
   canSearch = true,
   onSearchClick,
   placeholder = "Send a message...",
+  showSuggestedActions = false,
+  suggestedActions,
+  onSelectSuggestedAction,
 }: MultimodalInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [openModelSelector, setOpenModelSelector] = useState(false);
@@ -122,6 +129,16 @@ function PureMultimodalInput({
 
   return (
     <div className={cn("relative flex w-full flex-col gap-4", className)}>
+      {showSuggestedActions &&
+        attachments.length === 0 &&
+        uploadQueue.length === 0 &&
+        onSelectSuggestedAction && (
+          <SuggestedActions
+            actions={suggestedActions}
+            onSelect={onSelectSuggestedAction}
+          />
+        )}
+
       <PromptInput
         className="rounded-xl border border-border bg-background p-3 shadow-xs transition-all duration-200 focus-within:border-border hover:border-muted-foreground/50"
         onSubmit={(event) => {

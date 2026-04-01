@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import type { ToolState } from "@chatkit/ai-elements";
+
 export type ChatMessageRole = "user" | "assistant" | "system";
 
 export type ChatTextPart = {
@@ -22,6 +24,8 @@ export type ChatFilePart = {
 
 export type ChatToolPart = {
   type: `tool-${string}`;
+  state?: ToolState | (string & {});
+  toolName?: string;
   [key: string]: unknown;
 };
 

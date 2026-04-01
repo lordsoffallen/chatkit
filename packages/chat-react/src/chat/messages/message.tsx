@@ -1,6 +1,7 @@
 "use client";
 
 import { Sparkles } from "lucide-react";
+import type { ReactNode } from "react";
 import { useState } from "react";
 
 import { cn } from "@chatkit/shared";
@@ -13,8 +14,11 @@ import type {
   ChatMessage,
   ChatToolPart,
   MessageVote,
-  RenderToolPart,
 } from "./types";
+import {
+  ToolMessagePart,
+  type ToolMessageActionHandlers,
+} from "./tool-message";
 
 function sanitizeText(text: string) {
   return text.replace("<has_function_call>", "");
@@ -26,7 +30,19 @@ type PreviewMessageProps = {
   vote?: MessageVote;
   isLoading: boolean;
   isReadonly: boolean;
-  renderToolPart?: RenderToolPart;
+  renderToolPreview?: (context: {
+    message: ChatMessage;
+    part: ChatToolPart;
+    isLoading: boolean;
+    isReadonly: boolean;
+  }) => ReactNode;
+  renderToolDetails?: (context: {
+    message: ChatMessage;
+    part: ChatToolPart;
+    isLoading: boolean;
+    isReadonly: boolean;
+  }) => ReactNode;
+  toolActions?: ToolMessageActionHandlers;
   renderActions?: (context: {
     chatId?: string;
     message: ChatMessage;
@@ -35,11 +51,11 @@ type PreviewMessageProps = {
     isReadonly: boolean;
     mode: "view" | "edit";
     setMode: (mode: "view" | "edit") => void;
-  }) => React.ReactNode;
+  }) => ReactNode;
   renderEditor?: (context: {
     message: ChatMessage;
     setMode: (mode: "view" | "edit") => void;
-  }) => React.ReactNode;
+  }) => ReactNode;
 };
 
 export function PreviewMessage({
@@ -48,7 +64,9 @@ export function PreviewMessage({
   vote,
   isLoading,
   isReadonly,
-  renderToolPart,
+  renderToolPreview,
+  renderToolDetails,
+  toolActions,
   renderActions,
   renderEditor,
 }: PreviewMessageProps) {
@@ -168,12 +186,23 @@ export function PreviewMessage({
               }
             }
 
-            if (part.type.startsWith("tool-") && renderToolPart) {
-              return renderToolPart(part as ChatToolPart, {
+            if (part.type.startsWith("tool-")) {
+              const context = {
                 message,
+                part: part as ChatToolPart,
                 isLoading,
                 isReadonly,
-              });
+              };
+
+              return (
+                <ToolMessagePart
+                  actions={toolActions}
+                  context={context}
+                  details={renderToolDetails?.(context)}
+                  key={key}
+                  preview={renderToolPreview?.(context)}
+                />
+              );
             }
 
             return null;

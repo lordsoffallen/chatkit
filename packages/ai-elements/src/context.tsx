@@ -9,11 +9,30 @@ import {
 import { Progress } from "@chatkit/ui";
 import { Separator } from "@chatkit/ui";
 import { cn } from "@chatkit/shared";
-import type { AppUsage } from "@/types/usage";
+
+export type ContextUsage = {
+  totalTokens?: number;
+  inputTokens?: number;
+  outputTokens?: number;
+  cachedInputTokens?: number;
+  reasoningTokens?: number;
+  context?: {
+    totalMax?: number;
+    combinedMax?: number;
+    inputMax?: number;
+  };
+  costUSD?: {
+    inputUSD?: number | string;
+    outputUSD?: number | string;
+    cacheReadUSD?: number | string;
+    reasoningUSD?: number | string;
+    totalUSD?: number | string;
+  };
+};
 
 export type ContextProps = ComponentProps<"button"> & {
   /** Optional full usage payload to enable breakdown view */
-  usage?: AppUsage;
+  usage?: ContextUsage;
 };
 
 const _THOUSAND = 1000;

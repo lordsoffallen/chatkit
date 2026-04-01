@@ -1,6 +1,4 @@
 "use client";
-
-import type { ToolUIPart } from "ai";
 import {
   CheckCircleIcon,
   ChevronDownIcon,
@@ -16,7 +14,17 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@chatkit/ui";
+import { Button } from "@chatkit/ui";
 import { cn } from "@chatkit/shared";
+
+export type ToolState =
+  | "input-streaming"
+  | "input-available"
+  | "approval-requested"
+  | "approval-responded"
+  | "output-available"
+  | "output-error"
+  | "output-denied";
 
 export type ToolProps = ComponentProps<typeof Collapsible>;
 
@@ -28,13 +36,13 @@ export const Tool = ({ className, ...props }: ToolProps) => (
 );
 
 export type ToolHeaderProps = {
-  type: ToolUIPart["type"];
-  state: ToolUIPart["state"];
+  type: string;
+  state: ToolState;
   className?: string;
 };
 
-const getStatusBadge = (status: ToolUIPart["state"]) => {
-  const labels: Record<ToolUIPart["state"], string> = {
+const getStatusBadge = (status: ToolState) => {
+  const labels: Record<ToolState, string> = {
     "input-streaming": "Pending",
     "input-available": "Running",
     "approval-requested": "Pending",
@@ -44,7 +52,7 @@ const getStatusBadge = (status: ToolUIPart["state"]) => {
     "output-denied": "Denied",
   };
 
-  const icons: Record<ToolUIPart["state"], ReactNode> = {
+  const icons: Record<ToolState, ReactNode> = {
     "input-streaming": <CircleIcon className="size-4" />,
     "input-available": <ClockIcon className="size-4 animate-pulse" />,
     "approval-requested": <ClockIcon className="size-4 text-yellow-600" />,
@@ -102,7 +110,7 @@ export const ToolContent = ({ className, ...props }: ToolContentProps) => (
 );
 
 export type ToolInputProps = ComponentProps<"div"> & {
-  input: ToolUIPart["input"];
+  input: unknown;
 };
 
 export const ToolInput = ({ className, input, ...props }: ToolInputProps) => (
@@ -118,7 +126,7 @@ export const ToolInput = ({ className, input, ...props }: ToolInputProps) => (
 
 export type ToolOutputProps = ComponentProps<"div"> & {
   output: ReactNode;
-  errorText: ToolUIPart["errorText"];
+  errorText?: string;
 };
 
 export const ToolOutput = ({
@@ -150,3 +158,98 @@ export const ToolOutput = ({
     </div>
   );
 };
+
+export type ToolBodyProps = ComponentProps<"div">;
+
+export const ToolBody = ({ className, ...props }: ToolBodyProps) => (
+  <div className={cn("space-y-3 border-t p-4", className)} {...props} />
+);
+
+export type ToolSectionProps = ComponentProps<"div"> & {
+  title?: ReactNode;
+};
+
+export const ToolSection = ({
+  className,
+  title,
+  children,
+  ...props
+}: ToolSectionProps) => (
+  <div className={cn("space-y-2", className)} {...props}>
+    {title ? (
+      <h4 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+        {title}
+      </h4>
+    ) : null}
+    {children}
+  </div>
+);
+
+export type ToolPreviewProps = ToolProps & {
+  type: string;
+  state: ToolState;
+  preview?: ReactNode;
+  children?: ReactNode;
+};
+
+export const ToolPreview = ({
+  type,
+  state,
+  preview,
+  children,
+  defaultOpen = true,
+  ...props
+}: ToolPreviewProps) => (
+  <Tool defaultOpen={defaultOpen} {...props}>
+    <ToolHeader state={state} type={type} />
+    <ToolContent>
+      <ToolBody>
+        {preview}
+        {children}
+      </ToolBody>
+    </ToolContent>
+  </Tool>
+);
+
+export type ToolApprovalActionsProps = ComponentProps<"div"> & {
+  onApprove?: () => void;
+  onReject?: () => void;
+  approveLabel?: string;
+  rejectLabel?: string;
+  approveDisabled?: boolean;
+  rejectDisabled?: boolean;
+};
+
+export const ToolApprovalActions = ({
+  className,
+  onApprove,
+  onReject,
+  approveLabel = "Approve",
+  rejectLabel = "Reject",
+  approveDisabled,
+  rejectDisabled,
+  ...props
+}: ToolApprovalActionsProps) => (
+  <div
+    className={cn("flex flex-wrap items-center gap-2", className)}
+    {...props}
+  >
+    <Button
+      disabled={approveDisabled || !onApprove}
+      onClick={onApprove}
+      size="sm"
+      type="button"
+    >
+      {approveLabel}
+    </Button>
+    <Button
+      disabled={rejectDisabled || !onReject}
+      onClick={onReject}
+      size="sm"
+      type="button"
+      variant="outline"
+    >
+      {rejectLabel}
+    </Button>
+  </div>
+);

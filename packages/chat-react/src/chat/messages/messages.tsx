@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import type { ComponentProps } from "react";
 
 import {
   Conversation,
@@ -9,7 +10,8 @@ import {
 } from "@chatkit/ai-elements";
 
 import { PreviewMessage, ThinkingMessage } from "./message";
-import type { ChatMessage, MessageVote, RenderToolPart } from "./types";
+import type { ChatMessage, MessageVote } from "./types";
+import type { ToolMessageActionHandlers } from "./tool-message";
 
 export function Greeting() {
   return (
@@ -45,9 +47,11 @@ type MessagesProps = {
   votes?: MessageVote[];
   messages: ChatMessage[];
   isReadonly: boolean;
-  renderToolPart?: RenderToolPart;
-  renderActions?: React.ComponentProps<typeof PreviewMessage>["renderActions"];
-  renderEditor?: React.ComponentProps<typeof PreviewMessage>["renderEditor"];
+  renderToolPreview?: ComponentProps<typeof PreviewMessage>["renderToolPreview"];
+  renderToolDetails?: ComponentProps<typeof PreviewMessage>["renderToolDetails"];
+  toolActions?: ToolMessageActionHandlers;
+  renderActions?: ComponentProps<typeof PreviewMessage>["renderActions"];
+  renderEditor?: ComponentProps<typeof PreviewMessage>["renderEditor"];
 };
 
 export function Messages({
@@ -56,7 +60,9 @@ export function Messages({
   votes,
   messages,
   isReadonly,
-  renderToolPart,
+  renderToolPreview,
+  renderToolDetails,
+  toolActions,
   renderActions,
   renderEditor,
 }: MessagesProps) {
@@ -84,7 +90,9 @@ export function Messages({
               message={message}
               renderActions={renderActions}
               renderEditor={renderEditor}
-              renderToolPart={renderToolPart}
+              renderToolDetails={renderToolDetails}
+              renderToolPreview={renderToolPreview}
+              toolActions={toolActions}
               vote={votes?.find((vote) => vote.messageId === message.id)}
             />
           ))}
