@@ -1,9 +1,28 @@
 {
   "name": "@chatkit/cli",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0",
+  "description": "Chatkit source installer for chat UI and artifact blocks.",
   "type": "module",
+  "files": [
+    "bin",
+    "src",
+    "README.md"
+  ],
   "bin": {
     "chatkit": "./bin/chatkit.js"
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "chatkit",
+    "cli",
+    "chatbot",
+    "shadcn",
+    "ai"
+  ],
+  "license": "MIT"
 }
