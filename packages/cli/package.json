@@ -1,0 +1,9 @@
+{
+  "name": "@chatkit/cli",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "chatkit": "./bin/chatkit.js"
+  }
+}
