@@ -1,0 +1,34 @@
+name: Publish CLI
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "*"
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: publish-cli
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: Pack CLI
+        run: npm pack --workspace @lordsoffallen/chatkit-cli
+
+      - name: Publish CLI
+        run: npm publish --workspace @lordsoffallen/chatkit-cli --access public

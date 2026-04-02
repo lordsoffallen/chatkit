@@ -1,4 +1,4 @@
-# @chatkit/cli
+# @lordsoffallen/chatkit-cli
 
 Source installer for Chatkit UI blocks.
 
@@ -7,21 +7,21 @@ Source installer for Chatkit UI blocks.
 Use directly with `npx`:
 
 ```bash
-npx @chatkit/cli add chat
-npx @chatkit/cli add chat header input messages
-npx @chatkit/cli add artifact document
+npx @lordsoffallen/chatkit-cli add chat
+npx @lordsoffallen/chatkit-cli add chat header input messages
+npx @lordsoffallen/chatkit-cli add artifact document
 ```
 
 ## Current Commands
 
 ```bash
-npx @chatkit/cli add chat
-npx @chatkit/cli add chat header
-npx @chatkit/cli add chat input
-npx @chatkit/cli add chat messages
-npx @chatkit/cli add chat sidebar
-npx @chatkit/cli add chat header input messages
-npx @chatkit/cli add artifact document
+npx @lordsoffallen/chatkit-cli add chat
+npx @lordsoffallen/chatkit-cli add chat header
+npx @lordsoffallen/chatkit-cli add chat input
+npx @lordsoffallen/chatkit-cli add chat messages
+npx @lordsoffallen/chatkit-cli add chat sidebar
+npx @lordsoffallen/chatkit-cli add chat header input messages
+npx @lordsoffallen/chatkit-cli add artifact document
 ```
 
 This installs source files into:

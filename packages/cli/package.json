@@ -1,5 +1,5 @@
 {
-  "name": "@chatkit/cli",
+  "name": "@lordsoffallen/chatkit-cli",
   "version": "0.1.0",
   "description": "Chatkit source installer for chat UI and artifact blocks.",
   "type": "module",
@@ -14,7 +14,7 @@
     "README.md"
   ],
   "bin": {
-    "chatkit": "./bin/chatkit.js"
+    "chatkit": "bin/chatkit.js"
   },
   "publishConfig": {
     "access": "public"

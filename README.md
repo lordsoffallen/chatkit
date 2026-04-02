@@ -9,24 +9,31 @@ Chatkit follows a shadcn-style model: the CLI copies source into your app, insta
 Use the published CLI directly:
 
 ```bash
-npx @chatkit/cli add artifact document
+npx @lordsoffallen/chatkit-cli add chat
+npx @lordsoffallen/chatkit-cli add chat header input messages
+npx @lordsoffallen/chatkit-cli add artifact document
 ```
 
 ## Commands
 
-Current install command:
+Current install commands:
 
 ```bash
-npx @chatkit/cli add artifact document
+npx @lordsoffallen/chatkit-cli add chat
+npx @lordsoffallen/chatkit-cli add chat header
+npx @lordsoffallen/chatkit-cli add chat input
+npx @lordsoffallen/chatkit-cli add chat messages
+npx @lordsoffallen/chatkit-cli add chat sidebar
+npx @lordsoffallen/chatkit-cli add chat header input messages
+npx @lordsoffallen/chatkit-cli add artifact document
 ```
 
 CLI command surface:
 
 ```bash
-npx @chatkit/cli init
-npx @chatkit/cli add chat
-npx @chatkit/cli add sidebar
-npx @chatkit/cli add artifact document
+npx @lordsoffallen/chatkit-cli init
+npx @lordsoffallen/chatkit-cli add chat
+npx @lordsoffallen/chatkit-cli add artifact document
 ```
 
 ## What Gets Installed
@@ -38,7 +45,25 @@ components/chatkit/
   shared/
   ui/
   ai-elements/
+  chat/
+  sidebar/
   artifacts/
+```
+
+For `add chat`, the installer currently pulls:
+
+- `shared`
+- `ui`
+- `ai-elements`
+- `chat-header`
+- `chat-input`
+- `chat-messages`
+- `chat-sidebar`
+
+If you pass specific parts, only those chat slices are installed:
+
+```bash
+npx @lordsoffallen/chatkit-cli add chat header input
 ```
 
 For `add artifact document`, the installer currently pulls:
@@ -55,6 +80,11 @@ It also merges the required dependencies into the target app's `package.json`.
 
 Available now:
 
+- `chat`
+- `chat header`
+- `chat input`
+- `chat messages`
+- `chat sidebar`
 - `artifact document`
 
 This includes:
@@ -78,7 +108,7 @@ Those endpoints are expected to be wired by the consuming app or template.
 
 Public package:
 
-- `@chatkit/cli`
+- `@lordsoffallen/chatkit-cli`
 
 Private authoring packages:
 
@@ -108,7 +138,7 @@ So consumers only install what the selected slice needs.
 
 The npm package for this install flow is:
 
-- `@chatkit/cli`
+- `@lordsoffallen/chatkit-cli`
 
 Repo scripts:
 
@@ -116,3 +146,19 @@ Repo scripts:
 npm run pack:cli
 npm run publish:cli
 ```
+
+GitHub Actions workflow:
+
+- [publish-cli.yml](/Users/fazil.topal/Projects/chatkit/.github/workflows/publish-cli.yml)
+
+Release triggers:
+
+- manual run via GitHub Actions
+- pushing any git tag
+
+Trusted publishing requirements:
+
+- npm trusted publisher configured for this package
+- GitHub repository/user must match npm trusted publisher settings exactly
+- workflow filename must match `publish-cli.yml` exactly
+- GitHub-hosted runner

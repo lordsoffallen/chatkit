@@ -60,3 +60,4 @@ template/
 tmp
 packages/cli/templates/
 chatkit-cli-*.tgz
+lordsoffallen-chatkit-cli-*.tgz
