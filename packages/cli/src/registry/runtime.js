@@ -130,10 +130,102 @@ export const artifactDocumentSlice = {
   peerDependencies,
 };
 
+export const chatHeaderSlice = {
+  name: "chat-header",
+  kind: "chat",
+  description: "Chat header and visibility selector components.",
+  files: [
+    {
+      source: "packages/chat-react/src/chat/header",
+      target: "components/chatkit/chat/header",
+    },
+  ],
+  includes: ["shared", "ui"],
+  dependencies: {
+    "lucide-react": "^0.446.0",
+  },
+  peerDependencies,
+};
+
+export const chatInputSlice = {
+  name: "chat-input",
+  kind: "chat",
+  description: "Multimodal chat input, tool selector, and suggested actions.",
+  files: [
+    {
+      source: "packages/chat-react/src/chat/input",
+      target: "components/chatkit/chat/input",
+    },
+  ],
+  includes: ["shared", "ui", "ai-elements"],
+  dependencies: {
+    "fast-deep-equal": "^3.1.3",
+    "lucide-react": "^0.446.0",
+  },
+  peerDependencies,
+};
+
+export const chatMessagesSlice = {
+  name: "chat-messages",
+  kind: "chat",
+  description: "Chat message list, message items, actions, and tool rendering.",
+  files: [
+    {
+      source: "packages/chat-react/src/chat/messages",
+      target: "components/chatkit/chat/messages",
+    },
+  ],
+  includes: ["shared", "ui", "ai-elements"],
+  dependencies: {
+    "fast-deep-equal": "^3.1.3",
+    "lucide-react": "^0.446.0",
+    motion: "^12.23.26",
+  },
+  peerDependencies,
+};
+
+export const chatSidebarSlice = {
+  name: "chat-sidebar",
+  kind: "chat",
+  description: "Chat history sidebar components.",
+  files: [
+    {
+      source: "packages/chat-react/src/sidebar",
+      target: "components/chatkit/sidebar",
+    },
+  ],
+  includes: ["shared", "ui"],
+  dependencies: {
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.446.0",
+  },
+  peerDependencies,
+};
+
+export const chatSlice = {
+  name: "chat",
+  kind: "chat",
+  description: "Full chat frontend bundle including header, input, messages, and sidebar.",
+  files: [],
+  includes: [
+    "chat-header",
+    "chat-input",
+    "chat-messages",
+    "chat-sidebar",
+  ],
+  dependencies: {},
+  peerDependencies,
+};
+
 export const slices = [
   sharedSlice,
   uiSlice,
   aiElementsSlice,
+  chatHeaderSlice,
+  chatInputSlice,
+  chatMessagesSlice,
+  chatSidebarSlice,
+  chatSlice,
   artifactCoreSlice,
   artifactDocumentSlice,
 ];

@@ -58,3 +58,5 @@ tmp/
 
 template/
 tmp
+packages/cli/templates/
+chatkit-cli-*.tgz

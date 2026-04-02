@@ -6,7 +6,8 @@ import process from "node:process";
 
 import { getSlice } from "../src/registry/runtime.js";
 
-const repoRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../../..");
+const packageRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+const repoRoot = path.resolve(packageRoot, "../..");
 
 const aliasTargets = {
   "@chatkit/shared": "components/chatkit/shared",
@@ -17,19 +18,33 @@ const aliasTargets = {
 async function main() {
   const args = process.argv.slice(2);
 
-  if (args[0] !== "add" || args[1] !== "artifact" || !args[2]) {
+  if (args[0] !== "add" || !args[1]) {
     printUsage();
     process.exitCode = 1;
     return;
   }
 
   const targetDir = getOption(args, "--cwd") || process.cwd();
-  const artifactName = args[2];
-  const sliceName = `artifact-${artifactName}`;
-  const resolvedSliceNames = resolveIncludes(sliceName);
+  const command = args[1];
+  const positionalArgs = args.filter((value, index) => {
+    if (index < 2) return false;
+    if (args[index - 1] === "--cwd") return false;
+    if (value === "--cwd") return false;
+    return true;
+  });
+
+  const result = resolveInstallRequest(command, positionalArgs);
+
+  if (!result) {
+    printUsage();
+    process.exitCode = 1;
+    return;
+  }
+
+  const { displayName, resolvedSliceNames } = result;
 
   if (!resolvedSliceNames.length) {
-    console.error(`Unknown artifact slice: ${artifactName}`);
+    console.error(`Unknown install target: ${command} ${positionalArgs.join(" ")}`.trim());
     process.exitCode = 1;
     return;
   }
@@ -41,7 +56,7 @@ async function main() {
     if (!slice) continue;
 
     for (const entry of slice.files) {
-      const sourcePath = path.join(repoRoot, entry.source);
+      const sourcePath = await resolveSourcePath(entry.source);
       const targetPath = path.join(targetDir, entry.target);
       const stats = await fs.stat(sourcePath);
 
@@ -67,13 +82,15 @@ async function main() {
   await mergePackageJson(targetDir, resolvedSliceNames);
 
   console.log(
-    `Installed ${sliceName} into ${path.relative(process.cwd(), targetDir) || "."}`
+    `Installed ${displayName} into ${path.relative(process.cwd(), targetDir) || "."}`
   );
   console.log(`Included slices: ${resolvedSliceNames.join(", ")}`);
 }
 
 function printUsage() {
-  console.log("Usage: chatkit add artifact <name> [--cwd <path>]");
+  console.log("Usage:");
+  console.log("  chatkit add artifact <name> [--cwd <path>]");
+  console.log("  chatkit add chat [header] [input] [messages] [sidebar] [--cwd <path>]");
 }
 
 function getOption(args, name) {
@@ -100,6 +117,42 @@ function resolveIncludes(rootName) {
   return ordered;
 }
 
+function resolveInstallRequest(command, positionalArgs) {
+  if (command === "artifact" && positionalArgs[0]) {
+    const sliceName = `artifact-${positionalArgs[0]}`;
+    return {
+      displayName: sliceName,
+      resolvedSliceNames: resolveIncludes(sliceName),
+    };
+  }
+
+  if (command === "chat") {
+    if (positionalArgs.length === 0) {
+      return {
+        displayName: "chat",
+        resolvedSliceNames: resolveIncludes("chat"),
+      };
+    }
+
+    const uniqueParts = [...new Set(positionalArgs)];
+    const resolvedSliceNames = [
+      ...new Set(
+        uniqueParts.flatMap((part) => {
+          const sliceName = part === "all" ? "chat" : `chat-${part}`;
+          return resolveIncludes(sliceName);
+        })
+      ),
+    ];
+
+    return {
+      displayName: `chat ${uniqueParts.join(" ")}`.trim(),
+      resolvedSliceNames,
+    };
+  }
+
+  return null;
+}
+
 async function listFiles(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
   const files = [];
@@ -114,6 +167,17 @@ async function listFiles(dir) {
   }
 
   return files;
+}
+
+async function resolveSourcePath(source) {
+  const packagedSourcePath = path.join(packageRoot, "templates", source);
+
+  try {
+    await fs.stat(packagedSourcePath);
+    return packagedSourcePath;
+  } catch {}
+
+  return path.join(repoRoot, source);
 }
 
 async function rewriteInternalImports(files, targetDir) {

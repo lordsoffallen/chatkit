@@ -3,8 +3,13 @@
   "version": "0.1.0",
   "description": "Chatkit source installer for chat UI and artifact blocks.",
   "type": "module",
+  "scripts": {
+    "prepare:templates": "node ./scripts/prepare-templates.mjs",
+    "prepack": "npm run prepare:templates"
+  },
   "files": [
     "bin",
+    "templates",
     "src",
     "README.md"
   ],
@@ -24,5 +29,14 @@
     "shadcn",
     "ai"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lordsoffallen/chatkit.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/lordsoffallen/chatkit#readme",
+  "bugs": {
+    "url": "https://github.com/lordsoffallen/chatkit/issues"
+  }
 }
