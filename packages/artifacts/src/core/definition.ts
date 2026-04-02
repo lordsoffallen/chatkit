@@ -5,6 +5,7 @@ import type {
   ArtifactToolbarItemWithContext,
   ArtifactUIComponents,
   ArtifactInitializeParameters,
+  ArtifactStreamHandler,
 } from "./types";
 
 export type ArtifactDefinitionConfig<
@@ -29,6 +30,7 @@ export type ArtifactDefinitionConfig<
   initialize?: (
     parameters: ArtifactInitializeParameters<Meta, Extensions>
   ) => void | Promise<void>;
+  onStreamPart?: ArtifactStreamHandler<Meta, Content, Extensions>;
 };
 
 export class ArtifactDefinition<
@@ -45,6 +47,7 @@ export class ArtifactDefinition<
   readonly actions?;
   readonly toolbarWithContext;
   readonly initialize?;
+  readonly onStreamPart?;
 
   constructor(config: ArtifactDefinitionConfig<Meta, Content, Extensions, Version>) {
     this.toolType = config.toolType;
@@ -58,6 +61,7 @@ export class ArtifactDefinition<
     this.actions = config.actions || [];
     this.toolbarWithContext = config.toolbar || [];
     this.initialize = config.initialize;
+    this.onStreamPart = config.onStreamPart;
   }
 
   prepareToolbarItems(context: ArtifactToolbarContext<Content>): ArtifactToolbarItem[] {

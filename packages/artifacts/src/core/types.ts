@@ -72,6 +72,18 @@ export type ArtifactInitializeParameters<M = unknown, E = unknown> = {
   setExtensions: Dispatch<SetStateAction<E>>;
 };
 
+export type ArtifactStreamContext<M = unknown, C = unknown, E = unknown> = {
+  setMetadata: Dispatch<SetStateAction<M>>;
+  setArtifact: Dispatch<SetStateAction<ArtifactUIState<C>>>;
+  setExtensions: Dispatch<SetStateAction<E>>;
+};
+
+export type ArtifactStreamHandler<M = unknown, C = unknown, E = unknown> = (
+  context: ArtifactStreamContext<M, C, E> & {
+    streamPart: unknown;
+  }
+) => void;
+
 export type ArtifactHeaderContext<M = unknown, C = unknown> = {
   artifactUI: ArtifactUIState<C>;
   actionContext?: ArtifactActionContext<M, C>;
