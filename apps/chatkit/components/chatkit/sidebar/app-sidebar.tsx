@@ -39,7 +39,10 @@ type AppSidebarProps = {
   onNavigate: (chatId: string) => void;
   onDeleteChat?: (chatId: string) => void | Promise<void>;
   onDeleteAllChats?: () => void | Promise<void>;
-  onVisibilityChange?: (chatId: string, visibility: ChatVisibility) => void;
+  onVisibilityChange?: (
+    chatId: string,
+    visibility: ChatVisibility
+  ) => void | Promise<void>;
   onLogin?: () => void;
   onLogout?: () => void;
 };

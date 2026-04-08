@@ -1,11 +1,13 @@
 "use client";
 
+import type { Dispatch, SetStateAction } from "react";
 import { useEffect } from "react";
 import { getArtifactDefinition } from "@/artifacts";
 import {
   initialArtifactState,
   useArtifactState,
 } from "@/components/chatkit/artifacts/core/state";
+import type { ArtifactUI } from "@/types/artifact";
 import { useDataStream } from "./data-stream-provider";
 
 export function DataStreamHandler() {
@@ -28,7 +30,8 @@ export function DataStreamHandler() {
       if (artifactDefinition?.onStreamPart) {
         artifactDefinition.onStreamPart({
           streamPart: delta,
-          setArtifact,
+          setArtifact:
+            setArtifact as Dispatch<SetStateAction<ArtifactUI<unknown>>>,
           setMetadata,
           setExtensions,
         });

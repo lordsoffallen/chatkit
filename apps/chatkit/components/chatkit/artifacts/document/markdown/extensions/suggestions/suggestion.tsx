@@ -16,17 +16,10 @@ import { useWindowSize } from "usehooks-ts";
 import { cn } from "../../../../../shared";
 import { Button } from "../../../../../ui";
 
-type SuggestionBase = {
-  id: string;
-  documentId: string;
-  createdAt?: string | Date;
-  originalText: string;
-  suggestedText: string;
-  description?: string | null;
-  isResolved?: boolean;
-};
+import type { DocumentSuggestion } from "../../../types";
 
-export interface UISuggestion extends SuggestionBase {
+export interface UISuggestion extends DocumentSuggestion {
+  id: string;
   selectionStart: number;
   selectionEnd: number;
 }
@@ -122,7 +115,7 @@ function findPositionsInDoc(doc: Node, searchText: string): Position | null {
 
 export function projectWithPositions(
   doc: Node,
-  suggestions: SuggestionBase[]
+  suggestions: DocumentSuggestion[]
 ): UISuggestion[] {
   return suggestions.map((suggestion) => {
     const positions = findPositionsInDoc(doc, suggestion.originalText);

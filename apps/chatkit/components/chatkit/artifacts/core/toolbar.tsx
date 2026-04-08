@@ -10,7 +10,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { useOnClickOutside } from "usehooks-ts";
 import { Square } from "lucide-react";
 
 import {
@@ -148,12 +147,8 @@ function PureArtifactToolbar({
   tools,
 }: ArtifactToolbarProps) {
   const toolbarRef = useRef<HTMLDivElement>(null);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
-
-  useOnClickOutside(toolbarRef, () => {
-    setIsToolbarVisible(false);
-  });
 
   const startCloseTimer = () => {
     if (timeoutRef.current) {
@@ -170,6 +165,28 @@ function PureArtifactToolbar({
       clearTimeout(timeoutRef.current);
     }
   };
+
+  useEffect(() => {
+    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
+      const target = event.target;
+
+      if (!(target instanceof Node)) {
+        return;
+      }
+
+      if (!toolbarRef.current?.contains(target)) {
+        setIsToolbarVisible(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("touchstart", handlePointerDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("touchstart", handlePointerDown);
+    };
+  }, [setIsToolbarVisible]);
 
   useEffect(() => {
     return () => {

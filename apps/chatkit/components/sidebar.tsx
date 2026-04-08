@@ -45,9 +45,9 @@ function mapUser(user?: AuthUser) {
 
   return {
     email: user.email,
-    image: user.image,
-    isAnonymous: user.isAnonymous,
-    role: user.role,
+    image: user.image ?? undefined,
+    isAnonymous: user.isAnonymous ?? undefined,
+    role: user.role ?? undefined,
   };
 }
 
@@ -171,7 +171,9 @@ export function AppSidebar({ user }: { user: AuthUser | undefined }) {
         void authClient.signOut();
       }}
       onNavigate={handleNavigate}
-      onVisibilityChange={handleVisibilityChange}
+      onVisibilityChange={(chatId, visibility) =>
+        handleVisibilityChange(chatId, visibility as VisibilityType)
+      }
       user={mapUser(user)}
     />
   );

@@ -16,9 +16,10 @@ import { useWindowSize } from "usehooks-ts";
 import { cn } from "@chatkit/shared";
 import { Button } from "@chatkit/ui";
 
-import type { DocumentSuggestion } from "../../types";
+import type { DocumentSuggestion } from "../../../types";
 
 export interface UISuggestion extends DocumentSuggestion {
+  id: string;
   selectionStart: number;
   selectionEnd: number;
 }
