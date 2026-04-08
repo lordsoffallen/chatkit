@@ -1,4 +1,4 @@
-export type DocumentKind = "text" | "markdown";
+export type DocumentKind = "text" | "sheet";
 
 export type MarkdownDocument = {
   content: string;

@@ -8,7 +8,11 @@ import {
 } from "../core";
 import { fetchDocumentSuggestions } from "./markdown/extensions/suggestions/actions";
 import { MarkdownEditor } from "./markdown/editor";
-import type { DocumentExtensions, MarkdownDocument } from "./types";
+import type {
+  DocumentExtensions,
+  DocumentSuggestion,
+  MarkdownDocument,
+} from "./types";
 
 export const markdownDocumentArtifact = new ArtifactDefinition<
   Record<string, never>,
@@ -133,10 +137,14 @@ export const markdownDocumentArtifact = new ArtifactDefinition<
       part.data.type === "suggestions"
     ) {
       setExtensions((extensions) => {
-        const currentSuggestions = extensions?.suggestions || [];
+        const currentSuggestions: DocumentSuggestion[] =
+          extensions?.suggestions || [];
+        const nextSuggestion = part.data.content as DocumentSuggestion | null;
         return {
           ...extensions,
-          suggestions: [...currentSuggestions, part.data.content].filter(Boolean),
+          suggestions: nextSuggestion
+            ? [...currentSuggestions, nextSuggestion]
+            : currentSuggestions,
         };
       });
     }

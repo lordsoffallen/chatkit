@@ -16,10 +16,12 @@ import type { DocumentArtifactResult, MarkdownDocument } from "./types";
 
 type DocumentArtifactRecord = {
   id: string;
+  createdAt: string | Date;
   title: string;
   kind: string;
   toolType: string;
   asset: MarkdownDocument;
+  metadata?: Record<string, unknown>;
 };
 
 export function DocumentToolPreview({
@@ -74,7 +76,7 @@ export function DocumentToolPreview({
       <ArtifactPreviewHitbox
         hitboxRef={hitboxRef}
         previewContent={{ content }}
-        result={result}
+        result={result && "id" in result ? result : undefined}
       />
       <ArtifactPreviewHeader
         icon={<FileText className="size-4" />}
