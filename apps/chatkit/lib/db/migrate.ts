@@ -4,7 +4,7 @@ import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
 
 config({
-  path: ".env.local",
+  path: new URL("../../.env.local", import.meta.url),
 });
 
 const runMigrate = async () => {
@@ -18,7 +18,9 @@ const runMigrate = async () => {
   console.log("⏳ Running migrations...");
 
   const start = Date.now();
-  await migrate(db, { migrationsFolder: "./lib/db/migrations" });
+  await migrate(db, {
+    migrationsFolder: new URL("./migrations", import.meta.url).pathname,
+  });
   const end = Date.now();
 
   console.log("✅ Migrations completed in", end - start, "ms");

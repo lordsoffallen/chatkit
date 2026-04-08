@@ -7,14 +7,14 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "bun run dev:chatkit",
+    "dev": "bun run --cwd apps/chatkit dev",
     "dev:full": "bun run db:start && bun run db:setup && bun run dev:chatkit",
     "build": "bun run db:start && bun run db:setup && bun run build:chatkit",
-    "start": "npm run start --workspace @chatkit/example-app",
+    "start": "bun run --cwd apps/chatkit start",
     "lint": "bunx ultracite check",
     "format": "bunx ultracite fix",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "bun run apps/chatkit/lib/db/migrate.ts",
+    "db:migrate": "bun run --cwd apps/chatkit lib/db/migrate.ts",
     "db:studio": "drizzle-kit studio",
     "db:push": "drizzle-kit push",
     "db:pull": "drizzle-kit pull",
@@ -24,8 +24,8 @@
     "db:stop": "docker compose -f apps/chatkit/docker-compose.yml down",
     "db:setup": "bun db:migrate",
     "db:reset": "docker compose -f apps/chatkit/docker-compose.yml down -v && bun run db:start && bun run db:setup",
-    "dev:chatkit": "npm run dev --workspace @chatkit/example-app",
-    "build:chatkit": "npm run build --workspace @chatkit/example-app",
+    "dev:chatkit": "bun run --cwd apps/chatkit dev",
+    "build:chatkit": "bun run --cwd apps/chatkit build",
     "test": "PLAYWRIGHT=true bun x playwright test --config apps/chatkit/playwright.config.ts",
     "pack:cli": "npm pack --workspace @lordsoffallen/chatkit-cli",
     "publish:cli": "npm publish --workspace @lordsoffallen/chatkit-cli --access public"

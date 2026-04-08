@@ -7,7 +7,7 @@ import { defineConfig, devices } from "@playwright/test";
 import { config } from "dotenv";
 
 config({
-  path: ".env.local",
+  path: new URL("./.env.local", import.meta.url),
 });
 
 /* Use process.env.PORT by default and fallback to port 3000 */
