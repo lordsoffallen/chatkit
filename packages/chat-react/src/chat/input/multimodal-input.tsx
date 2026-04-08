@@ -13,6 +13,7 @@ import {
 
 import {
   Context,
+  type ContextUsage,
   ModelSelector,
   ModelSelectorContent,
   ModelSelectorGroup,
@@ -53,7 +54,7 @@ type MultimodalInputProps = {
   onSubmit: () => void;
   onStop?: () => void;
   className?: string;
-  usage?: unknown;
+  usage?: ContextUsage;
   selectedModelId: string;
   onModelChange?: (modelId: string) => void;
   modelOptions: ModelOption[];
@@ -105,13 +106,6 @@ function PureMultimodalInput({
   useEffect(() => {
     textareaRef.current?.focus();
   }, []);
-
-  const contextProps = useMemo(
-    () => ({
-      usage,
-    }),
-    [usage]
-  );
 
   const canSubmit = input.trim().length > 0 || attachments.length > 0;
 
@@ -190,7 +184,7 @@ function PureMultimodalInput({
             rows={1}
             value={input}
           />
-          <Context {...contextProps} />
+          <Context usage={usage} />
         </div>
 
         <PromptInputToolbar className="!border-top-0 border-t-0! p-0 shadow-none dark:border-0 dark:border-transparent!">

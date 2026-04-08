@@ -22,8 +22,13 @@ export type ChatFilePart = {
   mediaType?: string;
 };
 
+export type ChatDataPart = {
+  type: `data-${string}`;
+  [key: string]: unknown;
+};
+
 export type ChatToolPart = {
-  type: `tool-${string}`;
+  type: `tool-${string}` | "dynamic-tool";
   state?: ToolState | (string & {});
   toolName?: string;
   [key: string]: unknown;
@@ -33,6 +38,7 @@ export type ChatMessagePart =
   | ChatTextPart
   | ChatReasoningPart
   | ChatFilePart
+  | ChatDataPart
   | ChatToolPart;
 
 export type ChatMessage = {

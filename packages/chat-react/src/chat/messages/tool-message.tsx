@@ -29,10 +29,8 @@ export type ToolMessageActionHandlers = {
   onReject?: (context: ToolMessageRenderContext) => void;
 };
 
-export function getToolState(part: ChatToolPart): ToolState {
-  const state = part.state;
-
-  if (
+function isToolState(state: ChatToolPart["state"]): state is ToolState {
+  return (
     state === "input-streaming" ||
     state === "input-available" ||
     state === "approval-requested" ||
@@ -40,7 +38,13 @@ export function getToolState(part: ChatToolPart): ToolState {
     state === "output-available" ||
     state === "output-error" ||
     state === "output-denied"
-  ) {
+  );
+}
+
+export function getToolState(part: ChatToolPart): ToolState {
+  const state = part.state;
+
+  if (isToolState(state)) {
     return state;
   }
 

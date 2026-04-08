@@ -24,6 +24,10 @@ function sanitizeText(text: string) {
   return text.replace("<has_function_call>", "");
 }
 
+function isToolPart(part: { type: string }): part is ChatToolPart {
+  return part.type.startsWith("tool-") || part.type === "dynamic-tool";
+}
+
 type PreviewMessageProps = {
   chatId?: string;
   message: ChatMessage;
@@ -104,7 +108,7 @@ export function PreviewMessage({
                 (message.parts.some(
                   (part) => part.type === "text" && part.text?.trim()
                 ) ||
-                  message.parts.some((part) => part.type.startsWith("tool-")))) ||
+                  message.parts.some((part) => isToolPart(part)))) ||
               mode === "edit",
             "max-w-[calc(100%-2.5rem)] sm:max-w-[min(fit-content,80%)]":
               message.role === "user" && mode !== "edit",
@@ -186,10 +190,10 @@ export function PreviewMessage({
               }
             }
 
-            if (part.type.startsWith("tool-")) {
+            if (isToolPart(part)) {
               const context = {
                 message,
-                part: part as ChatToolPart,
+                part,
                 isLoading,
                 isReadonly,
               };

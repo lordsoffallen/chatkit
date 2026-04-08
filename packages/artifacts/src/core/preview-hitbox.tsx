@@ -1,6 +1,6 @@
 "use client";
 
-import type { MouseEvent, RefObject } from "react";
+import type { MouseEvent, Ref } from "react";
 import { Maximize2 } from "lucide-react";
 
 import { cn } from "@chatkit/shared";
@@ -22,7 +22,7 @@ export function ArtifactPreviewHitbox<C = unknown>({
   previewContent,
   className,
 }: {
-  hitboxRef?: RefObject<HTMLDivElement | null>;
+  hitboxRef?: Ref<HTMLDivElement>;
   result?: ArtifactPreviewResult<C>;
   previewContent?: C;
   className?: string;
