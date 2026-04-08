@@ -1,6 +1,7 @@
 import { Copy, FileText, MessageSquare, Redo2, Sparkles, Undo2 } from "lucide-react";
 
 import {
+  type ArtifactAction,
   ArtifactDefinition,
   ArtifactVersionedContent,
   ArtifactVersionControlFooter,
@@ -13,6 +14,35 @@ import type {
   DocumentSuggestion,
   MarkdownDocument,
 } from "./types";
+
+const markdownDocumentActions: ArtifactAction<
+  Record<string, never>,
+  MarkdownDocument
+>[] = [
+  {
+    icon: <Undo2 className="size-4" />,
+    description: "View previous version",
+    onClick: ({ handleVersionChange }) => {
+      handleVersionChange?.("prev");
+    },
+    isDisabled: ({ currentVersionIndex }) => currentVersionIndex === 0,
+  },
+  {
+    icon: <Redo2 className="size-4" />,
+    description: "View next version",
+    onClick: ({ handleVersionChange }) => {
+      handleVersionChange?.("next");
+    },
+    isDisabled: ({ isCurrentVersion }) => Boolean(isCurrentVersion),
+  },
+  {
+    icon: <Copy className="size-4" />,
+    description: "Copy to clipboard",
+    onClick: ({ content }) => {
+      void navigator.clipboard.writeText(content.content);
+    },
+  },
+];
 
 export const markdownDocumentArtifact = new ArtifactDefinition<
   Record<string, never>,
@@ -31,6 +61,7 @@ export const markdownDocumentArtifact = new ArtifactDefinition<
         isContentDirty={context.isContentDirty}
         isLoading={context.isLoading}
         onClose={context.onClose}
+        actions={markdownDocumentActions}
       />
     ),
     renderContent: (context) => {
@@ -173,31 +204,7 @@ export const markdownDocumentArtifact = new ArtifactDefinition<
       });
     }
   },
-  actions: [
-    {
-      icon: <Undo2 className="size-4" />,
-      description: "View previous version",
-      onClick: ({ handleVersionChange }) => {
-        handleVersionChange?.("prev");
-      },
-      isDisabled: ({ currentVersionIndex }) => currentVersionIndex === 0,
-    },
-    {
-      icon: <Redo2 className="size-4" />,
-      description: "View next version",
-      onClick: ({ handleVersionChange }) => {
-        handleVersionChange?.("next");
-      },
-      isDisabled: ({ isCurrentVersion }) => Boolean(isCurrentVersion),
-    },
-    {
-      icon: <Copy className="size-4" />,
-      description: "Copy to clipboard",
-      onClick: ({ content }) => {
-        void navigator.clipboard.writeText(content.content);
-      },
-    },
-  ],
+  actions: markdownDocumentActions,
   toolbar: [
     {
       icon: <Sparkles className="size-4" />,
