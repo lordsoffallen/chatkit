@@ -1,7 +1,8 @@
 import "server-only";
 
-import { and, desc, eq, gte } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { assetQueries } from "@/artifacts/queries";
+import { documentQueries } from "@/artifacts/document/db/queries";
 import type {
   ArtifactKind,
   ArtifactQueryInterface,
@@ -59,19 +60,41 @@ async function saveArtifact<
 
   try {
     return await db.transaction(async (tx) => {
-      // First, create the artifact record (with optional manual ID)
-      const [savedArtifact] = await tx
-        .insert(artifact)
-        .values({
-          ...(id && { id }), // Only include id if provided
-          title,
-          toolType,
-          kind,
-          userId,
-          chatId,
-          metadata,
-        })
-        .returning();
+      const [existingArtifact] = id
+        ? await tx.select().from(artifact).where(eq(artifact.id, id)).limit(1)
+        : [];
+
+      let savedArtifact: Artifact;
+
+      if (existingArtifact) {
+        const [updatedArtifact] = await tx
+          .update(artifact)
+          .set({
+            title,
+            toolType,
+            kind,
+            metadata,
+          })
+          .where(eq(artifact.id, existingArtifact.id))
+          .returning();
+
+        savedArtifact = updatedArtifact;
+      } else {
+        const [createdArtifact] = await tx
+          .insert(artifact)
+          .values({
+            ...(id && { id }),
+            title,
+            toolType,
+            kind,
+            userId,
+            chatId,
+            metadata,
+          })
+          .returning();
+
+        savedArtifact = createdArtifact;
+      }
 
       // Then, create the corresponding asset record with the artifact ID
       const asset = assetQueries[toolType];
@@ -153,35 +176,43 @@ async function getArtifactById(
 // Get all artifacts by ID (for versioning support)
 async function getAllArtifactsById(id: string): Promise<ArtifactWithAsset[]> {
   try {
-    // Get all artifact versions
-    const artifactRecords = await db
+    const [artifactRecord] = await db
       .select()
       .from(artifact)
       .where(eq(artifact.id, id))
-      .orderBy(desc(artifact.createdAt));
+      .limit(1);
 
-    if (artifactRecords.length === 0) {
+    if (!artifactRecord) {
       return [];
     }
 
-    // Get asset data for each artifact version
-    const artifactsWithAssets: ArtifactWithAsset[] = [];
-
-    for (const artifactRecord of artifactRecords) {
-      const assetData = await fetchAssetByToolTypeAndId(
-        artifactRecord.toolType,
+    if (artifactRecord.toolType === "document") {
+      const documents = await documentQueries.getAllByArtifactId(
         artifactRecord.id
       );
 
-      if (assetData) {
-        artifactsWithAssets.push({
-          ...artifactRecord,
-          asset: assetData,
-        } as ArtifactWithAsset);
-      }
+      return documents.map((doc) => ({
+        ...artifactRecord,
+        createdAt: doc.createdAt,
+        asset: doc,
+      })) as ArtifactWithAsset[];
     }
 
-    return artifactsWithAssets;
+    const assetData = await fetchAssetByToolTypeAndId(
+      artifactRecord.toolType,
+      artifactRecord.id
+    );
+
+    if (!assetData) {
+      return [];
+    }
+
+    return [
+      {
+        ...artifactRecord,
+        asset: assetData,
+      } as ArtifactWithAsset,
+    ];
   } catch (error) {
     if (error instanceof ChatSDKError) {
       throw error;
@@ -245,36 +276,27 @@ async function deleteArtifactsByIdAfterTimestamp(
 ): Promise<Artifact[]> {
   try {
     return await db.transaction(async (tx) => {
-      // First, get all artifacts to be deleted
-      const artifactsToDelete = await tx
+      const [artifactRecord] = await tx
         .select()
         .from(artifact)
-        .where(and(eq(artifact.id, id), gte(artifact.createdAt, timestamp)));
+        .where(eq(artifact.id, id))
+        .limit(1);
 
-      if (artifactsToDelete.length === 0) {
+      if (!artifactRecord) {
         return [];
       }
 
-      // Delete corresponding asset records for each artifact
-      for (const artifactRecord of artifactsToDelete) {
-        const asset = assetQueries[artifactRecord.toolType];
-        if (!asset) {
-          throw new ChatSDKError(
-            "bad_request:database",
-            `Unknown artifact toolType: ${artifactRecord.toolType}`
-          );
-        }
+      if (artifactRecord.toolType === "document") {
+        const deletedDocuments =
+          await documentQueries.deleteByIdAfterTimestamp(id, timestamp);
 
-        await asset.deleteById(artifactRecord.id);
+        return deletedDocuments.map((doc) => ({
+          ...artifactRecord,
+          createdAt: doc.createdAt,
+        })) as Artifact[];
       }
 
-      // Finally, delete the artifact records
-      const deletedArtifacts = await tx
-        .delete(artifact)
-        .where(and(eq(artifact.id, id), gte(artifact.createdAt, timestamp)))
-        .returning();
-
-      return deletedArtifacts;
+      return [];
     });
   } catch (error) {
     if (error instanceof ChatSDKError) {

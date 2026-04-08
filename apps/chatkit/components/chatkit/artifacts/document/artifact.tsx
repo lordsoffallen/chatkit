@@ -165,7 +165,7 @@ export const markdownDocumentArtifact = new ArtifactDefinition<
 
     if (
       part.type === "data-extensions" &&
-      part.data.type === "suggestions"
+      part.data.type === "suggestion"
     ) {
       setExtensions((extensions) => {
         const currentSuggestions: DocumentSuggestion[] =

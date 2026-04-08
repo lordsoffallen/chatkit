@@ -38,7 +38,7 @@ export const requestSuggestions = ({ dataStream }: RequestSuggestionsProps) =>
         ),
     }),
     execute: async ({ documentId }): Promise<RequestSuggestionsToolOutput> => {
-      const document = await documentQueries.getByDocumentId(documentId);
+      const document = await documentQueries.getById(documentId);
 
       if (!document) {
         return {
@@ -85,7 +85,7 @@ export const requestSuggestions = ({ dataStream }: RequestSuggestionsProps) =>
             originalText: element.originalSentence,
             suggestedText: element.suggestedSentence,
             description: element.description,
-            documentId,
+            documentId: document.id,
             isResolved: false,
             createdAt: new Date(),
           };

@@ -9,8 +9,13 @@ export type DocumentKind = (typeof documentKindEnum.enumValues)[number];
 export type DocumentQueryInterface = {
   save(data: Omit<Document, "id" | "createdAt">): Promise<Document>;
   getById(artifactId: string): Promise<Document | undefined>;
+  getAllByArtifactId(artifactId: string): Promise<Document[]>;
   getByDocumentId(documentId: string): Promise<Document | undefined>;
   deleteById(artifactId: string): Promise<void>;
+  deleteByIdAfterTimestamp(
+    artifactId: string,
+    timestamp: Date
+  ): Promise<Document[]>;
 };
 
 export type SuggestionQueryInterface = {

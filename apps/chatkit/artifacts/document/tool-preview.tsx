@@ -4,9 +4,6 @@ import {
   DocumentToolResult as ChatkitDocumentToolResult,
 } from "@/components/chatkit/artifacts/document";
 import {
-  Tool,
-  ToolContent,
-  ToolHeader,
   ToolInput,
   ToolOutput,
 } from "@/components/chatkit/ai-elements/tool";
@@ -24,33 +21,30 @@ function SuggestionsToolPreview({
   part,
   isReadonly,
 }: SuggestionsToolPreviewProps) {
-  const { toolCallId, state } = part;
+  const { state } = part;
 
   return (
-    <Tool defaultOpen={true} key={toolCallId}>
-      <ToolHeader state={state} type="tool-requestSuggestions" />
-      <ToolContent>
-        {state === "input-available" && <ToolInput input={part.input} />}
-        {state === "output-available" && (
-          <ToolOutput
-            errorText={undefined}
-            output={
-              "error" in part.output ? (
-                <div className="rounded border p-2 text-red-500">
-                  Error: {String(part.output.error)}
-                </div>
-              ) : (
-                <ChatkitDocumentToolResult
-                  isReadonly={isReadonly}
-                  result={part.output}
-                  type="request-suggestions"
-                />
-              )
-            }
-          />
-        )}
-      </ToolContent>
-    </Tool>
+    <>
+      {state === "input-available" && <ToolInput input={part.input} />}
+      {state === "output-available" && (
+        <ToolOutput
+          errorText={undefined}
+          output={
+            "error" in part.output ? (
+              <div className="rounded border p-2 text-red-500">
+                Error: {String(part.output.error)}
+              </div>
+            ) : (
+              <ChatkitDocumentToolResult
+                isReadonly={isReadonly}
+                result={part.output}
+                type="request-suggestions"
+              />
+            )
+          }
+        />
+      )}
+    </>
   );
 }
 

@@ -25,60 +25,56 @@ export function useArtifactContentSync(
       mutate<ArtifactWithAsset[]>(
         `/api/artifact?id=${artifact.artifactId}`,
         async (currentArtifacts) => {
-          if (!currentArtifacts) {
-            return [];
-          }
-
-          const currentArtifact = currentArtifacts.at(-1);
-
-          if (!currentArtifact) {
-            setIsContentDirty(false);
-            return currentArtifacts;
-          }
-
-          // Handle null asset case properly
           let shouldSave = false;
 
           if (artifactData?.asset) {
-            // Asset exists, check if dirty
             shouldSave = contentSync.isContentDirty(
               updatedContent,
               artifactData.asset
             );
           } else {
-            // No existing asset, always save
             shouldSave = true;
           }
 
-          if (shouldSave) {
-            const assetData = contentSync.getUpdatedAsset(updatedContent);
-
-            await fetch(`/api/artifact?id=${artifact.artifactId}`, {
-              method: "POST",
-              body: JSON.stringify({
-                title: artifact.title,
-                assetData,
-                kind: artifact.kind,
-                toolType: artifact.toolType,
-              }),
-            });
-
-            setIsContentDirty(false);
-
-            const newArtifact = {
-              ...currentArtifact,
-              asset: {
-                ...currentArtifact.asset,
-                ...assetData,
-              },
-              createdAt: new Date(),
-            };
-
-            return [...currentArtifacts, newArtifact];
+          if (!shouldSave) {
+            return currentArtifacts;
           }
-          return currentArtifacts;
+
+          const assetData = contentSync.getUpdatedAsset(updatedContent);
+          const response = await fetch(`/api/artifact?id=${artifact.artifactId}`, {
+            method: "POST",
+            body: JSON.stringify({
+              title: artifact.title,
+              assetData,
+              kind: artifact.kind,
+              toolType: artifact.toolType,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to persist artifact content");
+          }
+
+          setIsContentDirty(false);
+
+          const artifacts = currentArtifacts ?? [];
+          const currentArtifact = artifacts.at(-1);
+          if (!currentArtifact) {
+            return artifacts;
+          }
+
+          const newArtifact = {
+            ...currentArtifact,
+            asset: {
+              ...currentArtifact.asset,
+              ...assetData,
+            },
+            createdAt: new Date(),
+          };
+
+          return [...artifacts, newArtifact];
         },
-        { revalidate: false }
+        { revalidate: true }
       );
     },
     [enabled, artifact, artifactData, artifactDefinition, mutate]

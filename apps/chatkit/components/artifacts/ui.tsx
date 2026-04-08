@@ -6,7 +6,10 @@ import { memo, useEffect, useState } from "react";
 import { useSWRConfig } from "swr";
 import { getArtifactDefinition } from "@/artifacts";
 import { ArtifactVersionControlFooter } from "@/components/chatkit/artifacts/core/footer";
-import { useArtifactState } from "@/components/chatkit/artifacts/core/state";
+import {
+  useArtifactClose,
+  useArtifactState,
+} from "@/components/chatkit/artifacts/core/state";
 import { useArtifactContentSync } from "@/hooks/use-artifact-content-sync";
 import { useArtifactVersioning } from "@/hooks/use-artifact-versioning";
 import type {
@@ -46,6 +49,7 @@ function PureArtifactUI({
     setExtensions,
   } = useArtifactState();
   const typedArtifact = artifact as ArtifactUI;
+  const closeArtifact = useArtifactClose();
   const artifactDefinition = getArtifactDefinition(
     typedArtifact.toolType as ArtifactToolType,
     typedArtifact.kind as ArtifactKind
@@ -116,6 +120,7 @@ function PureArtifactUI({
       createdAt: latestArtifact ? latestArtifact.createdAt : null,
       isContentDirty,
       isLoading,
+      onClose: closeArtifact,
     });
   };
 

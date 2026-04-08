@@ -1,6 +1,6 @@
 import "server-only";
 
-import { desc, eq } from "drizzle-orm";
+import { and, asc, desc, eq, gte } from "drizzle-orm";
 import type {
   DocumentQueryInterface,
   SuggestionQueryInterface,
@@ -50,6 +50,23 @@ export async function getDocumentById(
   }
 }
 
+export async function getAllDocumentsByArtifactId(
+  artifactId: string
+): Promise<Document[]> {
+  try {
+    return await db
+      .select()
+      .from(document)
+      .where(eq(document.artifactId, artifactId))
+      .orderBy(asc(document.createdAt));
+  } catch (_error) {
+    throw new ChatSDKError(
+      "bad_request:database",
+      "Failed to get all document assets by artifact id"
+    );
+  }
+}
+
 export async function getDocumentByDocumentId(
   documentId: string
 ): Promise<Document | undefined> {
@@ -80,12 +97,36 @@ export async function deleteDocumentById(artifactId: string): Promise<void> {
   }
 }
 
+export async function deleteDocumentsByArtifactIdAfterTimestamp(
+  artifactId: string,
+  timestamp: Date
+): Promise<Document[]> {
+  try {
+    return await db
+      .delete(document)
+      .where(
+        and(
+          eq(document.artifactId, artifactId),
+          gte(document.createdAt, timestamp)
+        )
+      )
+      .returning();
+  } catch (_error) {
+    throw new ChatSDKError(
+      "bad_request:database",
+      "Failed to delete document assets by artifact id after timestamp"
+    );
+  }
+}
+
 // Export the query interface implementation
 export const documentQueries: DocumentQueryInterface = {
   save: saveDocument,
   getById: getDocumentById,
+  getAllByArtifactId: getAllDocumentsByArtifactId,
   getByDocumentId: getDocumentByDocumentId,
   deleteById: deleteDocumentById,
+  deleteByIdAfterTimestamp: deleteDocumentsByArtifactIdAfterTimestamp,
 };
 
 export async function saveSuggestion(
