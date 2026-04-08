@@ -17,10 +17,15 @@
       "**/*.jsx",
       "!node_modules",
       "!.next",
+      "!apps/chatkit/.next",
       "!ai-sdk",
       "!components/ui",
       "!lib/utils.ts",
-      "!hooks/use-mobile.ts"
+      "!hooks/use-mobile.ts",
+      "!apps/chatkit/components/chatkit",
+      "!apps/chatkit/components/ui",
+      "!apps/chatkit/lib/utils.ts",
+      "!apps/chatkit/hooks/use-mobile.ts"
     ]
   },
   "linter": {
