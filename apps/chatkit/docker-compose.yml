@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: chatkit-postgres
+    environment:
+      POSTGRES_DB: chatkit_dev
+      POSTGRES_USER: chatkit_user
+      POSTGRES_PASSWORD: chatkit_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chatkit_user -d chatkit_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  
+  # Node.js service (use with: docker compose up nextjs-standalone --build)
+  nextjs-standalone:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nextjs-standalone-image
+    container_name: nextjs-standalone-container
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+  # Bun service (use with: docker compose up nextjs-standalone-with-bun --build)
+  nextjs-standalone-with-bun:
+    build:
+      context: .
+      dockerfile: Dockerfile.bun
+    image: nextjs-standalone-bun-image
+    container_name: nextjs-standalone-bun-container
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

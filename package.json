@@ -1,0 +1,42 @@
+{
+  "name": "chatkit-workspace",
+  "version": "3.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "bun run dev:chatkit",
+    "dev:full": "bun run db:start && bun run db:setup && bun run dev:chatkit",
+    "build": "bun run db:start && bun run db:setup && bun run build:chatkit",
+    "start": "npm run start --workspace @chatkit/example-app",
+    "lint": "bunx ultracite check",
+    "format": "bunx ultracite fix",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "bun run apps/chatkit/lib/db/migrate.ts",
+    "db:studio": "drizzle-kit studio",
+    "db:push": "drizzle-kit push",
+    "db:pull": "drizzle-kit pull",
+    "db:check": "drizzle-kit check",
+    "db:up": "drizzle-kit up",
+    "db:start": "docker compose -f apps/chatkit/docker-compose.yml up -d postgres",
+    "db:stop": "docker compose -f apps/chatkit/docker-compose.yml down",
+    "db:setup": "bun db:migrate",
+    "db:reset": "docker compose -f apps/chatkit/docker-compose.yml down -v && bun run db:start && bun run db:setup",
+    "dev:chatkit": "npm run dev --workspace @chatkit/example-app",
+    "build:chatkit": "npm run build --workspace @chatkit/example-app",
+    "test": "PLAYWRIGHT=true bun x playwright test --config apps/chatkit/playwright.config.ts",
+    "pack:cli": "npm pack --workspace @lordsoffallen/chatkit-cli",
+    "publish:cli": "npm publish --workspace @lordsoffallen/chatkit-cli --access public"
+  },
+  "packageManager": "bun@1.3.11",
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.10",
+    "@types/node": "^25.5.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^6.0.2",
+    "ultracite": "^7.4.3"
+  }
+}
