@@ -3,9 +3,14 @@
 import { FileText, MessageSquare, Pencil } from "lucide-react";
 
 import { useArtifactState } from "../core/state";
-import type { DocumentArtifactResult } from "./types";
+import type { DocumentArtifactResult, DocumentKind } from "./types";
 
 type DocumentToolResultType = "create" | "update" | "request-suggestions";
+type SuggestionResult = {
+  id: string;
+  kind: DocumentKind;
+  message: string;
+};
 
 function getActionText(
   type: DocumentToolResultType,
@@ -40,7 +45,7 @@ export function DocumentToolResult({
   isReadonly = false,
 }: {
   type: DocumentToolResultType;
-  result: DocumentArtifactResult | { error: string };
+  result: DocumentArtifactResult | SuggestionResult | { error: string };
   isReadonly?: boolean;
 }) {
   const { setArtifact } = useArtifactState();
@@ -52,6 +57,8 @@ export function DocumentToolResult({
       </div>
     );
   }
+
+  const label = "title" in result ? result.title : result.message;
 
   return (
     <button
@@ -68,7 +75,7 @@ export function DocumentToolResult({
           kind: result.kind,
           content: currentArtifact.content,
           toolType: "document",
-          title: result.title,
+          title: "title" in result ? result.title : currentArtifact.title,
           isVisible: true,
           isStreaming: false,
           boundingBox: {
@@ -82,7 +89,7 @@ export function DocumentToolResult({
       type="button"
     >
       <div className="mt-0.5 text-muted-foreground">{getActionIcon(type)}</div>
-      <div>{`${getActionText(type, "past")} "${result.title}"`}</div>
+      <div>{`${getActionText(type, "past")} "${label}"`}</div>
     </button>
   );
 }
