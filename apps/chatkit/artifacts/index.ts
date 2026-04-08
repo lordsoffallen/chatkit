@@ -3,6 +3,11 @@ import { documentArtifact as chatkitDocumentArtifact } from "@/components/chatki
 import type { ArtifactUI } from "@/types/artifact";
 import type { ArtifactKind, ArtifactToolType } from "./types";
 
+type ArtifactLookupTarget = {
+  toolType: string;
+  kind: string;
+};
+
 export const artifacts = [chatkitDocumentArtifact as ArtifactDefinition<any, any, any, any>];
 
 export function getArtifactDefinition(
@@ -10,15 +15,15 @@ export function getArtifactDefinition(
   kind: ArtifactKind
 ): ArtifactDefinition<any, any, any, any>;
 export function getArtifactDefinition(
-  artifact: ArtifactUI<unknown>
+  artifact: ArtifactUI<unknown> | ArtifactLookupTarget
 ): ArtifactDefinition<any, any, any, any>;
 
 export function getArtifactDefinition(
-  toolTypeOrArtifact: ArtifactToolType | ArtifactUI<unknown>,
+  toolTypeOrArtifact: ArtifactToolType | ArtifactUI<unknown> | ArtifactLookupTarget,
   kind?: ArtifactKind
 ) {
-  let targetToolType: ArtifactToolType;
-  let targetKind: ArtifactKind | undefined;
+  let targetToolType: string;
+  let targetKind: string | undefined;
 
   if (typeof toolTypeOrArtifact === "string") {
     if (!kind) {
