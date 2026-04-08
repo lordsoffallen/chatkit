@@ -8,6 +8,7 @@ export * from "./header";
 export * from "./preview-container";
 export * from "./preview-header";
 export * from "./preview-hitbox";
+export * from "./preview-skeleton";
 export * from "./skeleton";
 export * from "./state";
 export * from "./tool-error";

@@ -174,6 +174,10 @@ export const chatMessagesSlice = {
       source: "packages/chat-react/src/chat/messages",
       target: "components/chatkit/chat/messages",
     },
+    {
+      source: "packages/chat-react/src/chat/hooks",
+      target: "components/chatkit/chat/hooks",
+    },
   ],
   includes: ["shared", "ui", "ai-elements"],
   dependencies: {
