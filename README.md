@@ -146,19 +146,3 @@ Repo scripts:
 npm run pack:cli
 npm run publish:cli
 ```
-
-GitHub Actions workflow:
-
-- [publish-cli.yml](/Users/fazil.topal/Projects/chatkit/.github/workflows/publish-cli.yml)
-
-Release triggers:
-
-- manual run via GitHub Actions
-- pushing any git tag
-
-Trusted publishing requirements:
-
-- npm trusted publisher configured for this package
-- GitHub repository/user must match npm trusted publisher settings exactly
-- workflow filename must match `publish-cli.yml` exactly
-- GitHub-hosted runner
