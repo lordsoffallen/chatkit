@@ -27,6 +27,24 @@ jobs:
           node-version: 24
           registry-url: https://registry.npmjs.org
 
+      - name: Sync CLI version from tag
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          PACKAGE_VERSION="${TAG_NAME#v}"
+          case "$PACKAGE_VERSION" in
+            ''|*[!0-9A-Za-z.+-]*)
+              echo "Unsupported tag format: $TAG_NAME"
+              exit 1
+              ;;
+          esac
+          if ! printf '%s' "$PACKAGE_VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$'; then
+            echo "Tag must resolve to a semver version, got: $TAG_NAME"
+            exit 1
+          fi
+          npm version "$PACKAGE_VERSION" --workspace @lordsoffallen/chatkit-cli --no-git-tag-version
+
       - name: Pack CLI
         run: npm pack --workspace @lordsoffallen/chatkit-cli
 
