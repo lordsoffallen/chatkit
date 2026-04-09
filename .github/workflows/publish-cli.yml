@@ -31,7 +31,6 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         env:
           TAG_NAME: ${{ github.ref_name }}
-          NPM_CONFIG_WORKSPACES: "false"
         working-directory: packages/cli
         run: |
           PACKAGE_VERSION="${TAG_NAME#v}"
@@ -45,16 +44,8 @@ jobs:
             echo "Tag must resolve to a semver version, got: $TAG_NAME"
             exit 1
           fi
-          npm version "$PACKAGE_VERSION" --no-git-tag-version
-
-      - name: Pack CLI
-        env:
-          NPM_CONFIG_WORKSPACES: "false"
-        working-directory: packages/cli
-        run: npm pack
+          npm version "$PACKAGE_VERSION" --no-git-tag-version --workspaces=false
 
       - name: Publish CLI
-        env:
-          NPM_CONFIG_WORKSPACES: "false"
         working-directory: packages/cli
-        run: npm publish --access public
+        run: npm publish --access public --workspaces=false
