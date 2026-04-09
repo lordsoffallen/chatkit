@@ -31,6 +31,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         env:
           TAG_NAME: ${{ github.ref_name }}
+        working-directory: packages/cli
         run: |
           PACKAGE_VERSION="${TAG_NAME#v}"
           case "$PACKAGE_VERSION" in
@@ -43,10 +44,12 @@ jobs:
             echo "Tag must resolve to a semver version, got: $TAG_NAME"
             exit 1
           fi
-          npm version "$PACKAGE_VERSION" --workspace @lordsoffallen/chatkit-cli --no-git-tag-version
+          npm version "$PACKAGE_VERSION" --no-git-tag-version
 
       - name: Pack CLI
-        run: npm pack --workspace @lordsoffallen/chatkit-cli
+        working-directory: packages/cli
+        run: npm pack
 
       - name: Publish CLI
-        run: npm publish --workspace @lordsoffallen/chatkit-cli --access public
+        working-directory: packages/cli
+        run: npm publish --access public
