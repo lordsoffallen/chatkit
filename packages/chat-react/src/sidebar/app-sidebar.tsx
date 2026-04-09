@@ -1,6 +1,6 @@
 "use client";
 
-import { Files, MessageSquarePlus, PanelLeft, Trash2 } from "lucide-react";
+import { MessageSquare, PanelLeft, Trash2, SquarePen } from "lucide-react";
 import type { ReactNode } from "react";
 import { useState } from "react";
 
@@ -72,13 +72,17 @@ export function AppSidebar({
         <SidebarHeader>
           <SidebarMenu>
             {!isMobile && (
-              <SidebarMenuItem className="mb-4">
-                <SidebarMenuButton onClick={toggleSidebar} tooltip="Sidebar">
-                  <PanelLeft className="group-data-[state=expanded]:hidden !size-5" />
-                  <Files className="group-data-[state=collapsed]:hidden !size-5" />
+              <SidebarMenuItem className="mb-2">
+                <SidebarMenuButton
+                  onClick={toggleSidebar}
+                  tooltip="Sidebar"
+                  className="hover:bg-transparent hover:text-inherit focus-visible:ring-0"
+                >
+                  <PanelLeft className="group-data-[state=expanded]:hidden !size-4" />
+                  <MessageSquare className="group-data-[state=collapsed]:hidden !size-4" />
                   <PanelLeft
                     className="ml-auto group-data-[state=collapsed]:hidden"
-                    size={14}
+                    size={12}
                   />
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -92,7 +96,7 @@ export function AppSidebar({
                 }}
                 tooltip="New Chat"
               >
-                <MessageSquarePlus />
+                <SquarePen />
                 <span>New Chat</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -101,7 +105,7 @@ export function AppSidebar({
               <SidebarMenuItem className="group-data-[state=collapsed]:hidden">
                 <SidebarMenuButton onClick={() => setShowDeleteAllDialog(true)}>
                   <Trash2 />
-                  <span>Delete All Chats</span>
+                  <span>Delete All</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             )}
